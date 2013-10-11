@@ -1,12 +1,39 @@
-var myApp = angular.module('myApp', []);
+var horizon = angular.module('horizon', ['ui.bootstrap']);
 
-function MyCtrl($scope) {
-    $scope.name = { name: 'Superhero' };
+function DomainGroupController($scope, $modal) {
     $scope.allGroups = [
         'Group One',
         'Heres a Group', ];
 
     $scope.domainGroups = [];
+
+    $scope.open = function () {
+
+        var modalInstance = $modal.open({
+            templateUrl: 'group_modal.html',
+            controller: ModalInstanceCtrl,
+            resolve: {
+                allGroups: function () {
+                    return $scope.allGroups;
+                }
+            }
+        })
+
+    };
+};
+
+function ModalInstanceCtrl($scope, $modalInstance, items) {
+
+    $scope.items = items;
+
+    $scope.ok = function () {
+        $modalInstance.close($scope.selected.item);
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+
     $scope.addToDomain = function (group) {
         $scope.domainGroups.push(group);
         var index = $scope.allGroups.indexOf(group);
@@ -18,9 +45,9 @@ function MyCtrl($scope) {
         $scope.domainGroups.splice(index, 1);
         $scope.allGroups.push(group);
     };
-}
+};
 
-myApp.filter('searchFor', function () {
+horizon.filter('searchFor', function () {
     return function (arr, searchString) {
         if (!searchString) {
             return arr;
