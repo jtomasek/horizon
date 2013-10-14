@@ -1,10 +1,10 @@
 {% load i18n %}
-
-<div ng-controller="DomainGroupController">
+<div ng-app="horizonApp">
+ <div ng-controller="DomainGroupController">
     <button class="btn" ng-click="open()">Open me!</button>
 </div>
 
-<div ng-app="horizon" ng-controller="DomainGroupController">
+<div ng-controller="DomainGroupController">
     <script type="text/ng-template" id="group_modal.html">
         <div class="row">
             <div class="col-md-3">
@@ -46,6 +46,8 @@
         </div>
     </script>
 </div>
+</div>
+
 
 {% with table.needs_form_wrapper as needs_form_wrapper %}
 <div class="table_wrapper">

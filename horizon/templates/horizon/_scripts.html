@@ -5,7 +5,7 @@
 <script type="text/javascript" src="{% url 'horizon:jsi18n' 'horizon' %}"></script>
 
 {% comment %} Compress jQuery, Plugins, Bootstrap, Hogan.js and Horizon-specific JS. {% endcomment %}
-{% compress js %}
+{% comment %}{% compress js %} {% endcomment %}
 <script src='{{ STATIC_URL }}horizon/lib/jquery/jquery.min.js' type='text/javascript' charset="utf-8"></script>
 <script src='{{ STATIC_URL }}horizon/lib/jquery/jquery.cookie.js' type='text/javascript' charset="utf-8"></script>
 <script src='{{ STATIC_URL }}horizon/lib/jquery/jquery.quicksearch.js' type='text/javascript' charset="utf-8"></script>
@@ -45,7 +45,7 @@
 <script src='{{ STATIC_URL }}horizon/js/horizon.d3linechart.js' type='text/javascript' charset='utf-8'></script>
 <script src='{{ STATIC_URL }}horizon/js/horizon.firewalls.js' type='text/javascript' charset='utf-8'></script>
 {% block custom_js_files %}{% endblock %}
-{% endcompress %}
+{% comment %}{% endcompress %}{% endcomment %}
 
 {% comment %} Client-side Templates (These should *not* be inside the "compress" tag.) {% endcomment %}
 {% include "horizon/client_side/templates.html" %}

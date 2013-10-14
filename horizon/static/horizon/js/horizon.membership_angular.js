@@ -1,30 +1,13 @@
-var horizon = angular.module('horizon', ['ui.bootstrap']);
+var horizonApp = angular.module('horizonApp', ['ui.bootstrap']);
 
-function DomainGroupController($scope, $modal) {
-    $scope.allGroups = [
-        'Group One',
-        'Heres a Group', ];
+var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
 
+    $scope.allGroups = items;
     $scope.domainGroups = [];
 
-    $scope.open = function () {
-
-        var modalInstance = $modal.open({
-            templateUrl: 'group_modal.html',
-            controller: ModalInstanceCtrl,
-            resolve: {
-                allGroups: function () {
-                    return $scope.allGroups;
-                }
-            }
-        })
-
+    $scope.selected = {
+        item: $scope.items[0]
     };
-};
-
-function ModalInstanceCtrl($scope, $modalInstance, items) {
-
-    $scope.items = items;
 
     $scope.ok = function () {
         $modalInstance.close($scope.selected.item);
@@ -45,9 +28,35 @@ function ModalInstanceCtrl($scope, $modalInstance, items) {
         $scope.domainGroups.splice(index, 1);
         $scope.allGroups.push(group);
     };
+
 };
 
-horizon.filter('searchFor', function () {
+
+angular.module('horizonApp').controller('DomainGroupController',
+  ['$scope', '$modal',
+  function($scope, $modal) {
+
+    $scope.allGroups = [
+        'Group One',
+        'Heres a Group'
+    ];
+
+    $scope.open = function () {
+
+        var modalInstance = $modal.open({
+            templateUrl: 'group_modal.html',
+            controller: ModalInstanceCtrl,
+            resolve: {
+                items: function () {
+                    return $scope.allGroups;
+                }
+            }
+        })
+
+    };
+}]);
+
+horizonApp.filter('searchFor', function () {
     return function (arr, searchString) {
         if (!searchString) {
             return arr;
