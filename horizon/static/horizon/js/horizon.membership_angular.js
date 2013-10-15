@@ -1,4 +1,8 @@
-var horizonApp = angular.module('horizonApp', ['ui.bootstrap']);
+var horizonApp = angular.module('horizonApp', ['ui.bootstrap'])
+    .config(function($interpolateProvider) {
+    $interpolateProvider.startSymbol('{$');
+    $interpolateProvider.endSymbol('$}');
+});
 
 var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
 
@@ -6,7 +10,7 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
     $scope.domainGroups = [];
 
     $scope.selected = {
-        item: $scope.items[0]
+        item: $scope.allGroups[0]
     };
 
     $scope.ok = function () {
@@ -30,7 +34,6 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
     };
 
 };
-
 
 angular.module('horizonApp').controller('DomainGroupController',
   ['$scope', '$modal',
