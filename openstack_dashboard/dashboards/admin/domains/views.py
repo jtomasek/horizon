@@ -56,6 +56,7 @@ class CreateDomainView(workflows.WorkflowView):
 
 class UpdateDomainView(workflows.WorkflowView):
     workflow_class = project_workflows.UpdateDomain
+    template_name = "_update_domain.html"
 
     def get_initial(self):
         initial = super(UpdateDomainView, self).get_initial()

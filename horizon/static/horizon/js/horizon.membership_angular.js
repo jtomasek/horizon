@@ -1,7 +1,7 @@
 var horizonApp = angular.module('horizonApp', ['ui.bootstrap'])
     .config(function($interpolateProvider) {
-    $interpolateProvider.startSymbol('{$');
-    $interpolateProvider.endSymbol('$}');
+        $interpolateProvider.startSymbol('{$');
+        $interpolateProvider.endSymbol('$}');
 });
 
 var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
@@ -11,6 +11,14 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
 
     $scope.selected = {
         item: $scope.allGroups[0]
+    };
+
+    $scope.submit = function() {
+        $http.post('/admin/domains/default/update/', {
+            subject: $scope.subject
+        }).success(function(out_data) {
+            // do something
+        });
     };
 
     $scope.ok = function () {

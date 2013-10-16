@@ -20,6 +20,8 @@ from django.conf import settings  # noqa
 from django.core.urlresolvers import reverse  # noqa
 from django.utils.translation import ugettext_lazy as _  # noqa
 
+from djangular.forms.angular_model import NgModelFormMixin
+
 from horizon import exceptions
 from horizon import forms
 from horizon import workflows
@@ -56,7 +58,7 @@ class CreateDomainInfo(workflows.Step):
                    "enabled")
 
 
-class UpdateDomainGroupsAction(workflows.MembershipAction):
+class UpdateDomainGroupsAction(NgModelFormMixin, workflows.MembershipAction):
     def __init__(self, request, *args, **kwargs):
         super(UpdateDomainGroupsAction, self).__init__(request,
                                                        *args,
