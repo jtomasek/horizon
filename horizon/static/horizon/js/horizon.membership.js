@@ -1,4 +1,4 @@
-var horizonApp = angular.module('horizonApp', ['ui.bootstrap'])
+var horizonApp = angular.module('horizonApp', [])
     .config(function($interpolateProvider) {
         $interpolateProvider.startSymbol('{$');
         $interpolateProvider.endSymbol('$}');
@@ -11,9 +11,8 @@ angular.module('horizonApp').directive('membership',
                 restrict: 'E',
                 replace: true,
                 scope :{ status: '='},
-                templateUrl: '_membership_angular.html',
-                controller: function($scope, $element,$rootScope) {
-                }
+                template: '<div></div>',
+                templateUrl: '_membership_angular.html'
             };
         }]);
 
@@ -35,7 +34,8 @@ angular.module('horizonApp').filter('searchFor', function () {
 angular.module('horizonApp').controller('MembershipController',
     ['$scope',
     function($scope) {
-
+        console.log("Loaded angular membership controller");
+        $scope.chainsaw = "TEXAS";
         $scope.current_membership = [];
         $scope.data = [],
         $scope.roles = [],
@@ -52,7 +52,6 @@ angular.module('horizonApp').controller('MembershipController',
             });
         };
 
-
         $scope.addToDomain = function (group) {
             $scope.domainGroups.push(group);
             var index = $scope.allGroups.indexOf(group);
@@ -67,8 +66,13 @@ angular.module('horizonApp').controller('MembershipController',
 
 }]);
 
+function TestController($scope) {
+    console.log("loaded test controller");
+    $scope.chainsaw = "chainsawzzz!";
+}
 /* Namespace for core functionality related to Membership Workflow Step. */
 horizon.membership = {
+
 
   current_membership: [],
   data: [],
@@ -497,6 +501,7 @@ horizon.membership = {
    * Calls set-up functions upon loading the workflow.
    **/
   workflow_init: function(modal, step_slug, step_id) {
+    console.log("Loaded jquery workflow init");
     // fix the dropdown menu overflow issues
     $(".tab-content, .workflow").addClass("dropdown_fix");
 
