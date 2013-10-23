@@ -1,63 +1,8 @@
-var horizonApp = angular.module('horizonApp', ['ui.bootstrap'])
+var horizonApp = angular.module('horizonApp', [])
     .config(function($interpolateProvider) {
         $interpolateProvider.startSymbol('{$');
         $interpolateProvider.endSymbol('$}');
 });
-
-var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
-
-    $scope.allGroups = items;
-    $scope.domainGroups = [];
-
-    $scope.selected = {
-        item: $scope.allGroups[0]
-    };
-
-    $scope.ok = function () {
-        $modalInstance.close($scope.selected.item);
-    };
-
-    $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
-    };
-
-    $scope.addToDomain = function (group) {
-        $scope.domainGroups.push(group);
-        var index = $scope.allGroups.indexOf(group);
-        $scope.allGroups.splice(index, 1);
-    };
-
-    $scope.removeFromDomain = function (group) {
-        var index = $scope.domainGroups.indexOf(group);
-        $scope.domainGroups.splice(index, 1);
-        $scope.allGroups.push(group);
-    };
-
-};
-
-angular.module('horizonApp').controller('DomainGroupController',
-  ['$scope', '$modal',
-  function($scope, $modal) {
-
-    $scope.allGroups = [
-        'Group One',
-        'Heres a Group'
-    ];
-
-    $scope.open = function () {
-
-        var modalInstance = $modal.open({
-            templateUrl: 'group_modal.html',
-            controller: ModalInstanceCtrl,
-            resolve: {
-                items: function () {
-                    return $scope.allGroups;
-                }
-            }
-        })
-
-    };
-}]);
 
 angular.module('horizonApp').directive('membership',
     [
@@ -123,11 +68,3 @@ angular.module('horizonApp').controller('MembershipController',
         };
 
 }]);
-
-angular.module('horizonApp').controller('MembershipController',
-    ['$scope',
-    function($scope) {
-
-        console.log("loaded test controller");
-        $scope.chainsaw = "chainsawzzz!";
-    }]);
