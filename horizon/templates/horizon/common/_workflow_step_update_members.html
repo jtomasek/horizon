@@ -1,6 +1,5 @@
 {% load i18n %}
 
-<div ng-app="horizonApp">
     <div ng-controller="MembershipController">
         This is not angular <br/>
         Python scripts still loaded? {{ step }} <br/>
@@ -8,7 +7,7 @@
         <membership></membership>
     </div>
      <div ng-controller="MembershipController">
-        <script type="text/ng-template" id="_membership_angular.html">
+        <script type="text/ng-template" id="membership_angular.html">
             <noscript><h3 ng-bind="step"/></noscript>
             <h3>Angular Directive loaded</h3>
             <div class="membership" ng-class="{$ step.slug $}_membership" data-show-roles="{$ step.show_roles $}">
@@ -52,7 +51,7 @@
             </div>
         </script>
     </div>
-</div>
+
 
 <div ng-app="test">
     <div ng-controller="TestController">

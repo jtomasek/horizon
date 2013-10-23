@@ -1,20 +1,22 @@
-var horizonApp = angular.module('horizonApp', [])
-    .config(function($interpolateProvider) {
-        $interpolateProvider.startSymbol('{$');
-        $interpolateProvider.endSymbol('$}');
-});
+angular.module('horizonApp', []);
+console.log("bootstrap horizonApp");
 
 angular.module('horizonApp').directive('membership',
-    [
-        function() {
-            return {
-                restrict: 'E',
-                replace: true,
-                scope :{ status: '='},
-                template: '<div></div>',
-                templateUrl: '_membership_angular.html'
-            };
-        }]);
+[
+    function() {
+        return {
+            restrict: 'E',
+            replace: true,
+            scope :{ status: '='},
+            template: '<div></div>',
+            templateUrl: 'membership_angular.html',
+            controller: function() {
+                 console.log("directive loaded");
+
+            }
+
+        };
+    }]);
 
 angular.module('horizonApp').filter('searchFor', function () {
     return function (arr, searchString) {
@@ -68,3 +70,10 @@ angular.module('horizonApp').controller('MembershipController',
         };
 
 }]);
+
+angular.element(document).ready(function() {
+   angular.bootstrap(document, ['horizonApp']);
+   debugger;
+});
+
+

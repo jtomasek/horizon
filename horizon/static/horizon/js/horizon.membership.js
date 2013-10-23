@@ -430,6 +430,8 @@ horizon.membership = {
    **/
   workflow_init: function(modal, step_slug, step_id) {
     console.log("Loaded jquery workflow init");
+
+
     // fix the dropdown menu overflow issues
     $(".tab-content, .workflow").addClass("dropdown_fix");
 
