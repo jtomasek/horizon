@@ -434,13 +434,14 @@ horizon.membership = {
     //compiled_temp = $compile('membership_angular.html')($scope);
     //angular.element("#membership_div").html(compiled_temp);
 
-    angular.module('horizonApp').directive('membership',
+    angular.module('horizonApp').directive('hrMembership',
     [
         function() {
             return {
-                restrict: 'E',
+                // restrict: 'E',
                 replace: true,
-                scope :{ status: '='},
+                scope: { stepSlug: '=',
+                         step: '=' },
                 //template: '<div></div>',
                 templateUrl: 'membership_angular.html',
                 controller: function() {
