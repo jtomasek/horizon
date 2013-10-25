@@ -2,12 +2,9 @@
 
 <div ng-app="horizonApp">
     <div ng-controller="MembershipController">
-        This is not angular <br/>
-        Python scripts still loaded? {{ step }} <br/>
-        Angular scripts loading at all? <span ng-bind="chainsaw"></span>
-        <div hr-membership step="{{ step }}" step-slug="{{ step.slug }}"></div>
+       <div hr-membership step="{{ step }}" step-slug="{{ step.slug }}"></div>
     </div>
-    <script type="text/ng-template" id="membership_angular.html">
+    <script type="text/ng-template" id="membership_workflow.html">
         <div class="membership">
             <noscript><h3 ng-bind="step"/></noscript>
             <h3>Angular Directive loaded</h3>

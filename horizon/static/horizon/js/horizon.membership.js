@@ -428,7 +428,11 @@ horizon.membership = {
   },
 
   init_angular: function () {
-    angular.module('horizonApp', []);
+    angular.module('horizonApp', [])
+        .config(function($interpolateProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+        });
     console.log("init horizon module");
 
     //compiled_temp = $compile('membership_angular.html')($scope);
@@ -438,12 +442,11 @@ horizon.membership = {
     [
         function() {
             return {
-                // restrict: 'E',
+                restrict: 'A',
                 replace: true,
                 scope: { stepSlug: '=',
                          step: '=' },
-                //template: '<div></div>',
-                templateUrl: 'membership_angular.html',
+                templateUrl: 'membership_workflow.html',
                 controller: function() {
                      console.log("directive loaded");
 
@@ -472,7 +475,6 @@ horizon.membership = {
         function($scope) {
 
             console.log("Loaded angular membership controller");
-            $scope.chainsaw = "TEXAS";
             $scope.current_membership = [];
             $scope.data = [],
             $scope.roles = [],
@@ -505,9 +507,6 @@ horizon.membership = {
 
     }]);
 
-    //angular.element(document).ready(function() {
-    //   angular.bootstrap(document, ['horizonApp']);
-    //});
   },
 
   /*
