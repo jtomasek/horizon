@@ -1,7 +1,6 @@
 /* Namespace for core functionality related to Membership Workflow Step. */
 horizon.membership = {
 
-
   current_membership: [],
   data: [],
   roles: [],
@@ -87,8 +86,11 @@ horizon.membership = {
           members_list.push(member.value);
         });
       }
+
       horizon.membership.current_membership[step_slug][role_id] = members_list;
     });
+    console.log("Membership");
+    console.log(horizon.membership.current_membership[step_slug]);
   },
 
   /*
@@ -219,7 +221,10 @@ horizon.membership = {
   **/
   generate_html: function(step_slug) {
     var data;
+
     for (data in horizon.membership.data[step_slug]) {
+      console.log("Data");
+      console.log(data);
       var data_id = data;
       var display_name = horizon.membership.data[step_slug][data_id];
       var role_ids = this.get_member_roles(step_slug, data_id);
@@ -476,36 +481,33 @@ horizon.membership = {
 
             console.log("Loaded angular membership controller");
             $scope.current_membership = [];
-            $scope.data = [],
-            $scope.roles = [],
-            $scope.has_roles = [],
-            $scope.default_role_id = [],
+            $scope.data = [];
+            $scope.roles = [];
+            $scope.has_roles = [];
+            $scope.default_role_id = [];
 
-            $scope.open = function() {
-                console.log("opened");
+            $scope.available = [];
+            $scope.members = [];
+
+            $scope.addMember = function(member) {
+                console.log("Adding member:");
+                console.log(member);
+
+                members.push(member);
+                var index = available.indexOf(member);
+                available.splice(index, 1);
+            };
+
+            $scope.removeMember = function(member) {
+                console.log("Removing member:");
+                console.log(member);
+
+                available.push(member);
+                var index = members.indexOf(member);
+                members.splice(index, 1);
             }
 
-            $scope.submit = function() {
-                $http.post('/admin/domains/default/update/', {
-                    subject: $scope.subject
-                }).success(function(out_data) {
-                    // do something
-                });
-            };
-
-            $scope.addToDomain = function (group) {
-                $scope.domainGroups.push(group);
-                var index = $scope.allGroups.indexOf(group);
-                $scope.allGroups.splice(index, 1);
-            };
-
-            $scope.removeFromDomain = function (group) {
-                var index = $scope.domainGroups.indexOf(group);
-                $scope.domainGroups.splice(index, 1);
-                $scope.allGroups.push(group);
-            };
-
-    }]);
+        }]);
 
   },
 
@@ -514,7 +516,12 @@ horizon.membership = {
    **/
   workflow_init: function(modal, step_slug, step_id) {
     console.log("Loaded jquery workflow init");
-
+    console.log("Modal");
+    console.log(modal);
+    console.log("Step slug");
+    console.log(step_slug);
+    console.log("step_id");
+    console.log(step_id);
     // fix the dropdown menu overflow issues
     $(".tab-content, .workflow").addClass("dropdown_fix");
 

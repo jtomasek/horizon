@@ -2,12 +2,11 @@
 
 <div ng-app="horizonApp">
     <div ng-controller="MembershipController">
-       <div hr-membership step="{{ step }}" step-slug="{{ step.slug }}"></div>
+       <div hr-membership step="'{{ step }}'" step-slug="{{ step.slug }}"></div>
     </div>
     <script type="text/ng-template" id="membership_workflow.html">
         <div class="membership">
-            <noscript><h3 ng-bind="step"/></noscript>
-            <h3>Angular Directive loaded</h3>
+            <h3>{$ step $}</h3>
             <div class="membership" ng-class="{$ step.slug $}_membership" data-show-roles="{$ step.show_roles $}">
               <div class="header">
                 <div class="help_text" ng-bind="step.help_text"></div>
@@ -19,24 +18,36 @@
                 </div>
                 <div class="right">
                   <div class="fake_table fake_table_header" ng-class="fake_{$ step.slug $}_table">
-                    <span class="members_title" ng-bind=" step.members_list_title"></span>
+                    <span class="members_title" ng-bind="step.members_list_title"></span>
                     <input type="text" name="{$ step.slug $}_members_filter" id="{$ step.slug $}_members" class="filter" ng-class="{$ step.slug $}_filter" placeholder="Filter"/>
                   </div>
                 </div>
               </div>
               <div class="left filterable" ng-class="{$ step.slug $}_filterable">
                 <div class="fake_table" ng-class="fake_{$ step.slug $}_table" id="available_{{ step.slug }}">
-                  <ul class="available_members" ng-class="available_{$ step.slug $}"></ul>
-                  <ul class="no_results" id="no_available_{$ step.slug $}">
-                    <li>{$ step.no_available_text $}</li>
+                  <ul class="available_members" ng-class="available_{$ step.slug $}" ng-show="available.length >= 0">
+                    <li ng-repeat="member in available">
+                        <a class="btn btn-primary" ng-click="addMember(member)">+</a>
+                    </li>
+                  </ul>
+                  <ul class="no_results" id="no_available_{$ step.slug $}" ng-show="available.length === 0">
+                    <li>{$ step.no_members_text $}</li>
                   </ul>
                 </div>
               </div>
               <div class="right filterable" ng-class="{$ step.slug $}_filterable">
                 <div class="fake_table" ng-class="fake_{$ step.slug $}_table" id="{$ step.slug $}_members">
-                  <ul class="members" ng-class="{$ step.slug $}_members"></ul>
-                  <ul class="no_results" id="no_{$ step.slug $}_members">
-                    <li ng-bind="step.no_members_text"></li>
+                  <ul class="members" ng-class="{$ step.slug $}_members" ng-show="members.length >= 0">
+                     <li ng-repeat="member in members">
+                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <span class="roles_display">Member</span>
+                            <b class="caret"></b>
+                         </a>
+                         <a class="btn btn-primary" ng-click="removeMember(member)">-</a>
+                    </li>
+                  </ul>
+                  <ul class="no_results" id="no_{$ step.slug $}_members" ng-show="members.length === 0">
+                    <li>{$ step.no_members_text $}</li>
                   </ul>
                 </div>
               </div>
