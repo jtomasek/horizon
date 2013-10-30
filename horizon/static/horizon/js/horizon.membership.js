@@ -449,8 +449,10 @@ horizon.membership = {
             return {
                 restrict: 'A',
                 replace: true,
-                scope: { stepSlug: '=',
-                         step: '=' },
+                scope: { step: '=',
+                         stepSlug: '=',
+                         stepNoAvailableText: '=',
+                         stepNoMembersText: '=' },
                 templateUrl: 'membership_workflow.html',
                 controller: 'MembershipController'
             };

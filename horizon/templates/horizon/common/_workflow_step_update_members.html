@@ -1,7 +1,11 @@
 {% load i18n %}
 
 <div ng-app="horizonApp">
-    <div hr-membership step="'{{ step }}'" step-slug="{{ step.slug }}"></div>
+    <div hr-membership step="'{{ step }}'"
+                       step-slug="'{{ step.slug }}'"
+                       step-no-available-text="'{{ step.no_available_text}}'"
+                       step-no-members-text="'{{ step.no_members_text }}'">
+    </div>
     <script type="text/ng-template" id="membership_workflow.html">
         <div class="membership">
             <h3 ng-bind="step"></h3>
@@ -29,7 +33,7 @@
                     </li>
                   </ul>
                   <ul class="no_results" id="no_available_{$ step.slug $}" ng-show="available.length === 0">
-                    <li>{$ step.no_members_text $}</li>
+                    <li ng-bind="stepNoAvailableText"></li>
                   </ul>
                 </div>
               </div>
@@ -45,7 +49,7 @@
                     </li>
                   </ul>
                   <ul class="no_results" id="no_{$ step.slug $}_members" ng-show="members.length === 0">
-                    <li>{$ step.no_members_text $}</li>
+                    <li ng-bind="stepNoMembersText"></li>
                   </ul>
                 </div>
               </div>
