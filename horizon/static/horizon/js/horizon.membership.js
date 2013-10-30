@@ -433,7 +433,7 @@ horizon.membership = {
   },
 
   init_angular: function () {
-    angular.module('horizonApp', [])
+    var horizonApp = angular.module('horizonApp', [])
         .config(function($interpolateProvider) {
             $interpolateProvider.startSymbol('{$');
             $interpolateProvider.endSymbol('$}');
@@ -443,7 +443,7 @@ horizon.membership = {
     //compiled_temp = $compile('membership_angular.html')($scope);
     //angular.element("#membership_div").html(compiled_temp);
 
-    angular.module('horizonApp').directive('hrMembership',
+    horizonApp.directive('hrMembership',
     [
         function() {
             return {
@@ -452,15 +452,11 @@ horizon.membership = {
                 scope: { stepSlug: '=',
                          step: '=' },
                 templateUrl: 'membership_workflow.html',
-                controller: function() {
-                     console.log("directive loaded");
-
-                }
-
+                controller: 'MembershipController'
             };
         }]);
 
-    angular.module('horizonApp').filter('searchFor', function () {
+    horizonApp.filter('searchFor', function () {
         return function (arr, searchString) {
             if (!searchString) {
                 return arr;
@@ -475,7 +471,7 @@ horizon.membership = {
         };
     });
 
-    angular.module('horizonApp').controller('MembershipController',
+    horizonApp.controller('MembershipController',
         ['$scope',
         function($scope) {
 

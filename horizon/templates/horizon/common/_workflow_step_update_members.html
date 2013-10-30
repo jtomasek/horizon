@@ -1,12 +1,10 @@
 {% load i18n %}
 
 <div ng-app="horizonApp">
-    <div ng-controller="MembershipController">
-       <div hr-membership step="'{{ step }}'" step-slug="{{ step.slug }}"></div>
-    </div>
+    <div hr-membership step="'{{ step }}'" step-slug="{{ step.slug }}"></div>
     <script type="text/ng-template" id="membership_workflow.html">
         <div class="membership">
-            <h3>{$ step $}</h3>
+            <h3 ng-bind="step"></h3>
             <div class="membership" ng-class="{$ step.slug $}_membership" data-show-roles="{$ step.show_roles $}">
               <div class="header">
                 <div class="help_text" ng-bind="step.help_text"></div>
