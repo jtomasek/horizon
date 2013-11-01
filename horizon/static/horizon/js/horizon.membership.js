@@ -50,6 +50,7 @@ horizon.membership = {
   init_data_list: function(step_slug) {
     horizon.membership.data[step_slug] = [];
     _.each($(this.get_role_element(step_slug, "")).find("option"), function (option) {
+      console.log('Found ourselves an option:' + option.text);
       horizon.membership.data[step_slug][option.value] = option.text;
     });
   },
@@ -86,11 +87,10 @@ horizon.membership = {
           members_list.push(member.value);
         });
       }
-
+      console.log('members list:');
+      console.log(members_list);
       horizon.membership.current_membership[step_slug][role_id] = members_list;
     });
-    console.log("Membership");
-    console.log(horizon.membership.current_membership[step_slug]);
   },
 
   /*
@@ -384,61 +384,13 @@ horizon.membership = {
     });
   },
 
-  /*
-   * Sets up filtering for each list of data.
-   **/
-  list_filtering: function (step_slug) {
-    // remove previous lists' quicksearch events
-    $('input.' + step_slug + '_filter').unbind();
-
-    // set up quicksearch to filter on input
-    $('.' + step_slug + '_filterable').each(function () {
-      var css_class = $(this).children().children('ul').attr('class');
-      // Example value: members step_slug_members
-      // Pick the class name that contains the step_slug
-      var filter = _.find(css_class.split(' '), function(val){ return val.indexOf(step_slug) != -1; });
-
-      var input = $("input[id='" + filter +"']");
-      input.quicksearch('ul.' + filter + ' ul li span.display_name', {
-            'delay': 200,
-            'loader': 'span.loading',
-            'show': function () {
-              $(this).parent().parent().show();
-                if (filter == "available_" + step_slug) {
-                  $(this).parent('.dropdown-toggle').hide();
-                }
-              },
-            'hide': function () {
-              $(this).parent().parent().hide();
-            },
-            'noResults': 'ul#no_' + filter,
-            'onAfter': function () {
-                horizon.membership.fix_stripes(step_slug);
-            },
-            'prepareQuery': function (val) {
-              return new RegExp(val, "i");
-            },
-            'testQuery': function (query, txt, span) {
-              if ($(input).attr('id') == filter) {
-                $(input).prev().removeAttr('disabled');
-                return query.test($(span).text());
-              }
-              else
-                return true;
-            }
-      });
-    });
-
-
-  },
-
-  init_angular: function () {
+  init_angular: function (horizon) {
     var horizonApp = angular.module('horizonApp', [])
         .config(function($interpolateProvider) {
             $interpolateProvider.startSymbol('{$');
             $interpolateProvider.endSymbol('$}');
         });
-    console.log("init horizon module");
+    angular.module('horizonApp').constant('horizon', horizon);
 
     //compiled_temp = $compile('membership_angular.html')($scope);
     //angular.element("#membership_div").html(compiled_temp);
@@ -478,35 +430,80 @@ horizon.membership = {
     });
 
     horizonApp.controller('MembershipController',
-        ['$scope',
-        function($scope) {
-
-            console.log("Loaded angular membership controller");
-            $scope.current_membership = [];
-            $scope.data = [];
-            $scope.roles = [];
-            $scope.has_roles = [];
-            $scope.default_role_id = [];
+        ['$scope', 'horizon',
+        function($scope, horizon) {
 
             $scope.available = [];
             $scope.members = [];
+
+            $scope.loadDataFromDOM = function(stepSlug) {
+                console.log('init properties');
+                horizon.membership.init_properties(stepSlug);
+                $scope.has_roles = horizon.membership.has_roles[stepSlug];
+                $scope.default_role_id = horizon.membership.default_role_id[stepSlug];
+                $scope.data_list = horizon.membership.data[stepSlug];
+                $scope.roles = horizon.membership.roles[stepSlug];
+                $scope.current_membership = horizon.membership.current_membership[stepSlug];
+
+                console.log("Current membership:");
+                console.log($scope.current_membership);
+                console.log("default role id");
+                console.log($scope.default_role_id);
+                console.log("data");
+                console.log($scope.data_list);
+                console.log("roles");
+                console.log($scope.roles);
+                console.log("has roles");
+                console.log($scope.has_roles);
+
+                console.log("Loading current membership");
+                $scope.parseMembers($scope.data_list);
+                console.log("Members:");
+                console.log($scope.members);
+                console.log("Available:");
+                console.log($scope.available);
+
+            };
+
+            $scope.inGroup = function(member, roles) {
+                return false;
+            };
+
+            $scope.makeGroup = function(id, name) {
+                return { id: id, name: name }
+            };
+
+            $scope.parseMembers = function(data) {
+                for (var group in data) {
+                  g = $scope.makeGroup(group, data[group]);
+                  console.log("Made group");
+                  console.log(g)
+                  if($scope.inGroup(g)) {
+                    $scope.members.push(g);
+                  } else {
+                    $scope.available.push(g);
+                  }
+                }
+            };
+
+            $scope.loadDataFromDOM($scope.stepSlug);
 
             $scope.addMember = function(member) {
                 console.log("Adding member:");
                 console.log(member);
 
-                members.push(member);
-                var index = available.indexOf(member);
-                available.splice(index, 1);
+                $scope.members.push(member);
+                var index = $scope.available.indexOf(member);
+                $scope.available.splice(index, 1);
             };
 
             $scope.removeMember = function(member) {
                 console.log("Removing member:");
                 console.log(member);
 
-                available.push(member);
-                var index = members.indexOf(member);
-                members.splice(index, 1);
+                $scope.available.push(member);
+                var index = $scope.members.indexOf(member);
+                $scope.members.splice(index, 1);
             }
 
         }]);
@@ -578,8 +575,8 @@ horizon.membership = {
 
 
     });
-
-    horizon.membership.init_angular();
+    horizon.membership.init_angular(horizon);
     angular.bootstrap(document, ['horizonApp']);
+
   }
 };

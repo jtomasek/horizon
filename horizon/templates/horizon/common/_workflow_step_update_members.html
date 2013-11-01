@@ -32,9 +32,14 @@
               <div class="left filterable" ng-class="{$ stepSlug $}_filterable">
                 <div class="fake_table" ng-class="fake_{$ stepSlug $}_table" id="available_{$ stepSlug $}">
                   <ul class="available_members" ng-class="available_{$ stepSlug $}" ng-show="available.length >= 0">
-                    <li ng-repeat="member in available">
+                    <ul class="nav nav-pills btn-group" ng-repeat='member in available'>
+                      <li class="member" data-update_group_members-id="id_update_group_members_6bd4b7bedb8448a1a62c1b8f75340ae1">
+                        <span class="display_name">{$ member.name $}</span>
+                      </li>
+                      <li class="active">
                         <a class="btn btn-primary" ng-click="addMember(member)">+</a>
-                    </li>
+                      </li>
+                    </ul>
                   </ul>
                   <ul class="no_results" id="no_available_{$ stepSlug $}" ng-show="available.length === 0">
                     <li ng-bind="stepNoAvailableText"></li>
@@ -44,13 +49,21 @@
               <div class="right filterable" ng-class="{$ stepSlug $}_filterable">
                 <div class="fake_table" ng-class="fake_{$ stepSlug $}_table" id="{$ stepSlug $}_members">
                   <ul class="members" ng-class="{$ stepSlug $}_members" ng-show="members.length >= 0">
-                     <li ng-repeat="member in members">
-                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <span class="roles_display">Member</span>
-                            <b class="caret"></b>
-                         </a>
-                         <a class="btn btn-primary" ng-click="removeMember(member)">-</a>
-                    </li>
+                    <ul class="nav nav-pills btn-group" ng-repeat='member in members'>
+                      <li class="member" data-update_group_members-id="id_update_group_members_6bd4b7bedb8448a1a62c1b8f75340ae1">
+                        <span class="display_name">{$ member.name $}</span>
+                      </li>
+                      <li class="active"><a class="btn btn-primary" ng-click='removeMember(member)'>-</a></li>
+                      <li class="dropdown role_options" style="display: list-item;">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                          <span class="roles_display">Member</span>
+                          <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu role_dropdown clearfix" ng-repeat='role in roles'>
+                          <li data-role-id="role.id"><i class="icon-ok"></i>{$ role.name $}</li>
+                        </ul>
+                      </li>
+                    </ul>
                   </ul>
                   <ul class="no_results" id="no_{$ stepSlug $}_members" ng-show="members.length === 0">
                     <li ng-bind="stepNoMembersText"></li>
