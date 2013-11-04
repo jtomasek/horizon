@@ -19,20 +19,25 @@
                 <div class="left">
                   <div class="fake_table fake_table_header" ng-class="fake_{$ stepSlug $}_table">
                     <span class="members_title" ng-bind="stepAvailableListTitle"></span>
-                    <input type="text" name="available_{$ stepSlug $}_filter" id="available_{$ stepSlug $}" class="filter" ng-class="{$ stepSlug $}_filter" placeholder="Filter"/>
+                    <input type="text" name="available_{$ stepSlug $}_filter" id="available_{$ stepSlug $}"
+                           ng-model="available_filter.name" class="filter" ng-class="{$ stepSlug $}_filter"
+                           placeholder="Filter"/>
                   </div>
                 </div>
                 <div class="right">
                   <div class="fake_table fake_table_header" ng-class="fake_{$ stepSlug $}_table">
                     <span class="members_title" ng-bind="stepMembersListTitle"></span>
-                    <input type="text" name="{$ stepSlug $}_members_filter" id="{$ stepSlug $}_members" class="filter" ng-class="{$ stepSlug $}_filter" placeholder="Filter"/>
+                    <input type="text" name="{$ stepSlug $}_members_filter" id="{$ stepSlug $}_members"
+                           ng-model="members_filter.name" class="filter" ng-class="{$ stepSlug $}_filter"
+                           placeholder="Filter"/>
                   </div>
                 </div>
               </div>
               <div class="left filterable" ng-class="{$ stepSlug $}_filterable">
                 <div class="fake_table" ng-class="fake_{$ stepSlug $}_table" id="available_{$ stepSlug $}">
-                  <ul class="available_members" ng-class="available_{$ stepSlug $}" ng-show="available.length >= 0">
-                    <ul class="nav nav-pills btn-group" ng-repeat='member in available'>
+                  <ul class="available_members" ng-class="available_{$ stepSlug $}" ng-show="available.length">
+                    <ul class="nav nav-pills btn-group" ng-repeat='member in available | filter:available_filter'
+                        ng-class-even="'light_stripe'" ng-class-odd="'dark_stripe'" ng-class="{'last_stripe':$last}">
                       <li class="member" data-update_group_members-id="id_update_group_members_6bd4b7bedb8448a1a62c1b8f75340ae1">
                         <span class="display_name">{$ member.name $}</span>
                       </li>
@@ -41,15 +46,16 @@
                       </li>
                     </ul>
                   </ul>
-                  <ul class="no_results" id="no_available_{$ stepSlug $}" ng-show="available.length === 0">
+                  <ul class="no_results" id="no_available_{$ stepSlug $}" ng-hide="(available | filter:available_filter).length">
                     <li ng-bind="stepNoAvailableText"></li>
                   </ul>
                 </div>
               </div>
               <div class="right filterable" ng-class="{$ stepSlug $}_filterable">
                 <div class="fake_table" ng-class="fake_{$ stepSlug $}_table" id="{$ stepSlug $}_members">
-                  <ul class="members" ng-class="{$ stepSlug $}_members" ng-show="members.length >= 0">
-                    <ul class="nav nav-pills btn-group" ng-repeat='member in members'>
+                  <ul class="members" ng-class="{$ stepSlug $}_members" ng-show="members.length">
+                    <ul class="nav nav-pills btn-group" ng-repeat='member in members | filter:members_filter'
+                        ng-class-even="'light_stripe'" ng-class-odd="'dark_stripe'" ng-class="{'last_stripe':$last}">
                       <li class="member" data-update_group_members-id="id_update_group_members_6bd4b7bedb8448a1a62c1b8f75340ae1">
                         <span class="display_name">{$ member.name $}</span>
                       </li>
@@ -65,7 +71,7 @@
                       </li>
                     </ul>
                   </ul>
-                  <ul class="no_results" id="no_{$ stepSlug $}_members" ng-show="members.length === 0">
+                  <ul class="no_results" id="no_{$ stepSlug $}_members" ng-hide="(members | filter:members_filter).length">
                     <li ng-bind="stepNoMembersText"></li>
                   </ul>
                 </div>
