@@ -447,17 +447,17 @@ horizon.membership = {
 
                 console.log("Current membership:");
                 console.log($scope.current_membership);
-                console.log("default role id");
-                console.log($scope.default_role_id);
+                //console.log("default role id");
+                //console.log($scope.default_role_id);
                 console.log("data");
                 console.log($scope.data_list);
-                console.log("roles");
-                console.log($scope.roles);
-                console.log("has roles");
-                console.log($scope.has_roles);
+                //console.log("roles");
+                //console.log($scope.roles);
+                //console.log("has roles");
+                //console.log($scope.has_roles);
 
                 console.log("Loading current membership");
-                $scope.parseMembers($scope.data_list);
+                $scope.parseMembers($scope.data_list, $scope.current_membership);
                 console.log("Members:");
                 console.log($scope.members);
                 console.log("Available:");
@@ -465,20 +465,26 @@ horizon.membership = {
 
             };
 
-            $scope.inGroup = function(member, roles) {
-                return false;
+            $scope.inGroup = function(group, membership) {
+                var matched = false;
+                for (var roleId in membership) {
+                    angular.forEach(membership[roleId], function(groupId) {
+                        if(groupId === group.id) {
+                          matched = true;
+                        }
+                    });
+                }
+                return matched;
             };
 
             $scope.makeGroup = function(id, name) {
                 return { id: id, name: name }
             };
 
-            $scope.parseMembers = function(data) {
+            $scope.parseMembers = function(data, members) {
                 for (var group in data) {
                   g = $scope.makeGroup(group, data[group]);
-                  console.log("Made group");
-                  console.log(g)
-                  if($scope.inGroup(g)) {
+                  if($scope.inGroup(g, members) === true) {
                     $scope.members.push(g);
                   } else {
                     $scope.available.push(g);
