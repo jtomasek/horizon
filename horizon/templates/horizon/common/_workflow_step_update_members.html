@@ -59,14 +59,18 @@
                       <li class="member" data-update_group_members-id="id_update_group_members_6bd4b7bedb8448a1a62c1b8f75340ae1">
                         <span class="display_name">{$ member.name $}</span>
                       </li>
-                      <li class="active"><a class="btn btn-primary" ng-click='removeMember(member)'>-</a></li>
-                      <li class="dropdown role_options" style="display: list-item;">
+                      <li class="active">
+                        <a class="btn btn-primary" ng-click='removeMember(member)'>-</a>
+                      </li>
+                      <li class="dropdown role_options" style="display: list-item;" ng-show='has_roles'>
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                          <span class="roles_display">Member</span>
+                          <span class="roles_display">{$ roleShow(member) $}</span>
                           <b class="caret"></b>
                         </a>
-                        <ul class="dropdown-menu role_dropdown clearfix" ng-repeat='role in roles'>
-                          <li data-role-id="role.id"><i class="icon-ok"></i>{$ role.name $}</li>
+                        <ul class="dropdown-menu role_dropdown clearfix">
+                          <li data-role-id="role.id" ng-class="{true: 'selected', false: '' }[hasRole(member, role.id)]" ng-repeat='role in all_roles'>
+                            {$ role.name $}
+                          </li>
                         </ul>
                       </li>
                     </ul>

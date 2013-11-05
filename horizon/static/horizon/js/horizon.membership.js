@@ -87,8 +87,6 @@ horizon.membership = {
           members_list.push(member.value);
         });
       }
-      console.log('members list:');
-      console.log(members_list);
       horizon.membership.current_membership[step_slug][role_id] = members_list;
     });
   },
@@ -442,7 +440,7 @@ horizon.membership = {
                 $scope.has_roles = horizon.membership.has_roles[stepSlug];
                 $scope.default_role_id = horizon.membership.default_role_id[stepSlug];
                 $scope.data_list = horizon.membership.data[stepSlug];
-                $scope.roles = convertRoles(horizon.membership.roles[stepSlug]);
+                $scope.all_roles = $scope.convertRoles(horizon.membership.roles[stepSlug]);
                 $scope.current_membership = horizon.membership.current_membership[stepSlug];
 
                 console.log("Current membership:");
@@ -451,8 +449,8 @@ horizon.membership = {
                 console.log($scope.default_role_id);
                 console.log("data");
                 console.log($scope.data_list);
-                console.log("roles");
-                console.log($scope.roles);
+                console.log("all_roles");
+                console.log($scope.all_roles);
                 console.log("has roles");
                 console.log($scope.has_roles);
 
@@ -468,35 +466,57 @@ horizon.membership = {
             $scope.inGroup = function(group, membership) {
                 var matched = false;
                 for (var roleId in membership) {
-                    angular.forEach(membership[roleId], function(groupId) {
-                        if(groupId === group.id) {
-                          matched = true;
-                        }
-                    });
+                    if(membership.hasOwnProperty(roleId)) {
+                        angular.forEach(membership[roleId], function(groupId) {
+                            if(groupId === group.id) {
+                              matched = true;
+                              group.roles.push(roleId);
+                            }
+                        });
+                    }
                 }
                 return matched;
             };
 
-            function convertRoles(membership_roles) {
-              angular.forEach(membership_roles, function(value, key){
-                this.push({ id: key, name: value });
-              });
+            $scope.convertRoles = function(membership_roles) {
+                var roles = [];
+                for (var key in membership_roles) {
+                    if(membership_roles.hasOwnProperty(key)) {
+                        roles.push({ id: key, name: membership_roles[key] });
+                    }
+                };
+                return roles;
             }
 
+            $scope.hasRole = function(member, roleId) {
+                var index = member.roles.indexOf(roleId);
+                return index > 0;
+            };
+
             $scope.makeGroup = function(id, name) {
-                return { id: id, name: name }
+                return { id: id, name: name, roles: [] }
             };
 
             $scope.parseMembers = function(data, members) {
                 for (var group in data) {
-                  g = $scope.makeGroup(group, data[group]);
-                  if($scope.inGroup(g, members) === true) {
-                    $scope.members.push(g);
-                  } else {
-                    $scope.available.push(g);
+                    g = $scope.makeGroup(group, data[group]);
+                    if($scope.inGroup(g, members) === true) {
+                        $scope.members.push(g);
+                    } else {
+                        $scope.available.push(g);
+                    }
                   }
-                }
             };
+
+            $scope.roleShow = function(member) {
+                var name;
+                angular.forEach($scope.roles, function(role) {
+                    if(member.roles.indexOf(role.id) > 0) {
+                        name = role.name;
+                    }
+                });
+                return name;
+            }
 
             $scope.loadDataFromDOM($scope.stepSlug);
 
@@ -504,6 +524,7 @@ horizon.membership = {
                 console.log("Adding member:");
                 console.log(member);
 
+                member.roles.push($scope.default_role_id);
                 $scope.members.push(member);
                 var index = $scope.available.indexOf(member);
                 $scope.available.splice(index, 1);
@@ -513,6 +534,7 @@ horizon.membership = {
                 console.log("Removing member:");
                 console.log(member);
 
+                member.roles = [];
                 $scope.available.push(member);
                 var index = $scope.members.indexOf(member);
                 $scope.members.splice(index, 1);
