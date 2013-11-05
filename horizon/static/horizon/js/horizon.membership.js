@@ -490,7 +490,7 @@ horizon.membership = {
 
             $scope.hasRole = function(member, roleId) {
                 var index = member.roles.indexOf(roleId);
-                return index > 0;
+                return index >= 0;
             };
 
             $scope.makeGroup = function(id, name) {
@@ -510,8 +510,8 @@ horizon.membership = {
 
             $scope.roleShow = function(member) {
                 var name;
-                angular.forEach($scope.roles, function(role) {
-                    if(member.roles.indexOf(role.id) > 0) {
+                angular.forEach($scope.all_roles, function(role) {
+                    if(member.roles.indexOf(role.id) >= 0) {
                         name = role.name;
                     }
                 });
