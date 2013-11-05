@@ -442,19 +442,19 @@ horizon.membership = {
                 $scope.has_roles = horizon.membership.has_roles[stepSlug];
                 $scope.default_role_id = horizon.membership.default_role_id[stepSlug];
                 $scope.data_list = horizon.membership.data[stepSlug];
-                $scope.roles = horizon.membership.roles[stepSlug];
+                $scope.roles = convertRoles(horizon.membership.roles[stepSlug]);
                 $scope.current_membership = horizon.membership.current_membership[stepSlug];
 
                 console.log("Current membership:");
                 console.log($scope.current_membership);
-                //console.log("default role id");
-                //console.log($scope.default_role_id);
+                console.log("default role id");
+                console.log($scope.default_role_id);
                 console.log("data");
                 console.log($scope.data_list);
-                //console.log("roles");
-                //console.log($scope.roles);
-                //console.log("has roles");
-                //console.log($scope.has_roles);
+                console.log("roles");
+                console.log($scope.roles);
+                console.log("has roles");
+                console.log($scope.has_roles);
 
                 console.log("Loading current membership");
                 $scope.parseMembers($scope.data_list, $scope.current_membership);
@@ -476,6 +476,12 @@ horizon.membership = {
                 }
                 return matched;
             };
+
+            function convertRoles(membership_roles) {
+              angular.forEach(membership_roles, function(value, key){
+                this.push({ id: key, name: value });
+              });
+            }
 
             $scope.makeGroup = function(id, name) {
                 return { id: id, name: name }
