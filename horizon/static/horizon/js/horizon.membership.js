@@ -497,6 +497,15 @@ horizon.membership = {
                 return { id: id, name: name, roles: [] }
             };
 
+            $scope.toggleRole = function(member, role) {
+                if($scope.hasRole(member, role.id)) {
+                    var index = member.roles.indexOf(role.id);
+                    member.roles.splice(index, 1);
+                } else {
+                    member.roles.push(role.id);
+                }
+            }
+
             $scope.parseMembers = function(data, members) {
                 for (var group in data) {
                     g = $scope.makeGroup(group, data[group]);
@@ -509,10 +518,15 @@ horizon.membership = {
             };
 
             $scope.roleShow = function(member) {
-                var name;
+                var name = "";
+                var count = 0;
                 angular.forEach($scope.all_roles, function(role) {
                     if(member.roles.indexOf(role.id) >= 0) {
-                        name = role.name;
+                        if(count > 0) {
+                            name += ", "
+                        }
+                        name += role.name;
+                        count++;
                     }
                 });
                 return name;

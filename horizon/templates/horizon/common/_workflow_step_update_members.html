@@ -68,7 +68,8 @@
                           <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu role_dropdown clearfix">
-                          <li data-role-id="role.id" ng-class="{true: 'selected', false: '' }[hasRole(member, role.id)]" ng-repeat='role in all_roles'>
+                          <li data-role-id="role.id" ng-class="{true: 'selected', false: '' }[hasRole(member, role.id)]" ng-repeat='role in all_roles' ng-click='toggleRole(member, role)'>
+                            <i class="icon-ok"></i>
                             {$ role.name $}
                           </li>
                         </ul>
