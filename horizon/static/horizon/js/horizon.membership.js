@@ -153,89 +153,6 @@ horizon.membership = {
     horizon.membership.update_role_lists(step_slug, role_id, role_list);
   },
 
-  update_member_role_dropdown: function(step_slug, data_id, role_ids, member_el) {
-    if (typeof(role_ids) === 'undefined') {
-        role_ids = horizon.membership.get_member_roles(step_slug, data_id);
-    }
-    if (typeof(member_el) === 'undefined') {
-        member_el = horizon.membership.get_member_element(step_slug, data_id);
-    }
-
-    var $dropdown = member_el.find("li.member").siblings('.dropdown');
-    var $role_items = $dropdown.children('.role_dropdown').children('li');
-
-    $role_items.each(function (idx, el) {
-      if (_.contains(role_ids, $(el).data('role-id'))) {
-        $(el).addClass('selected');
-      } else {
-        $(el).removeClass('selected');
-      }
-    });
-
-    // set the selection back to default role
-    var $roles_display = $dropdown.children('.dropdown-toggle').children('.roles_display');
-    var roles_to_display = [];
-    for (var i = 0; i < role_ids.length; i++) {
-        if (i == 2) {
-            roles_to_display.push('...');
-            break;
-        }
-        roles_to_display.push(horizon.membership.roles[step_slug][role_ids[i]]);
-    }
-    text = roles_to_display.join(', ');
-    if (text.length == 0) text = gettext('No roles');
-    $roles_display.text(text);
-  },
-
-  /*
-   * Generates the HTML structure for a member that will be displayed
-   * as a list item in the member list.
-   **/
-  generate_member_element: function(step_slug, display_name, data_id, role_ids, text) {
-    var str_id = "id_" + step_slug + "_" + data_id;
-
-    var roles = [];
-    for (var r in horizon.membership.roles[step_slug]) {
-      var role = {};
-      role['role_id'] = r;
-      role['role_name'] = horizon.membership.roles[step_slug][r];
-      roles.push(role);
-    }
-
-    var template = horizon.templates.compiled_templates["#membership_template"],
-    params = {data_id: str_id,
-              step_slug: step_slug,
-              default_role: horizon.membership.roles[horizon.membership.default_role_id[step_slug]],
-              display_name: display_name,
-              text: text,
-              roles: roles},
-    member_el = $(template.render(params));
-    this.update_member_role_dropdown(step_slug, str_id, role_ids, member_el);
-    return $(member_el);
-  },
-
-  /*
-  * Generates the HTML structure for the membership UI.
-  **/
-  generate_html: function(step_slug) {
-    var data;
-
-    for (data in horizon.membership.data[step_slug]) {
-      console.log("Data");
-      console.log(data);
-      var data_id = data;
-      var display_name = horizon.membership.data[step_slug][data_id];
-      var role_ids = this.get_member_roles(step_slug, data_id);
-      if (role_ids.length > 0) {
-        $("." + step_slug + "_members").append(this.generate_member_element(step_slug, display_name, data_id, role_ids, "-"));
-      }
-      else {
-        $(".available_" + step_slug).append(this.generate_member_element(step_slug, display_name, data_id, role_ids, "+"));
-      }
-    }
-    horizon.membership.detect_no_results(step_slug);
-  },
-
   /*
    * Triggers on click of link to add/remove membership association.
    **/
@@ -435,7 +352,6 @@ horizon.membership = {
             $scope.members = [];
 
             $scope.loadDataFromDOM = function(stepSlug) {
-                console.log('init properties');
                 horizon.membership.init_properties(stepSlug);
                 $scope.has_roles = horizon.membership.has_roles[stepSlug];
                 $scope.default_role_id = horizon.membership.default_role_id[stepSlug];
@@ -443,23 +359,7 @@ horizon.membership = {
                 $scope.all_roles = $scope.convertRoles(horizon.membership.roles[stepSlug]);
                 $scope.current_membership = horizon.membership.current_membership[stepSlug];
 
-                console.log("Current membership:");
-                console.log($scope.current_membership);
-                console.log("default role id");
-                console.log($scope.default_role_id);
-                console.log("data");
-                console.log($scope.data_list);
-                console.log("all_roles");
-                console.log($scope.all_roles);
-                console.log("has roles");
-                console.log($scope.has_roles);
-
-                console.log("Loading current membership");
                 $scope.parseMembers($scope.data_list, $scope.current_membership);
-                console.log("Members:");
-                console.log($scope.members);
-                console.log("Available:");
-                console.log($scope.available);
 
             };
 
@@ -553,9 +453,6 @@ horizon.membership = {
             $scope.loadDataFromDOM($scope.stepSlug);
 
             $scope.addMember = function(member) {
-                console.log("Adding member:");
-                console.log(member);
-
                 member.roles.push($scope.default_role_id);
                 $scope.members.push(member);
                 var index = $scope.available.indexOf(member);
@@ -566,9 +463,6 @@ horizon.membership = {
             };
 
             $scope.removeMember = function(member) {
-                console.log("Removing member:");
-                console.log(member);
-
                 member.roles = [];
                 $scope.available.push(member);
                 var index = $scope.members.indexOf(member);
@@ -585,13 +479,6 @@ horizon.membership = {
    * Calls set-up functions upon loading the workflow.
    **/
   workflow_init: function(modal, step_slug, step_id) {
-    console.log("Loaded jquery workflow init");
-    console.log("Modal");
-    console.log(modal);
-    console.log("Step slug");
-    console.log(step_slug);
-    console.log("step_id");
-    console.log(step_id);
     // fix the dropdown menu overflow issues
     $(".tab-content, .workflow").addClass("dropdown_fix");
 
@@ -646,8 +533,16 @@ horizon.membership = {
 
 
     });
-    horizon.membership.init_angular(horizon);
-    angular.bootstrap(document, ['horizonApp']);
 
+    horizon.membership.init_angular(horizon);
+
+    function hasClass(element, cls) {
+        return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+    }
+
+    modal = $('#modal_wrapper .workflow');
+    if(!(hasClass(modal, "ng-scope"))) {
+        angular.bootstrap(modal, ['horizonApp']);
+    }
   }
 };
