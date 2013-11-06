@@ -501,9 +501,23 @@ horizon.membership = {
                 if($scope.hasRole(member, role.id)) {
                     var index = member.roles.indexOf(role.id);
                     member.roles.splice(index, 1);
+                    var role_members = getRoleMembers($scope.members, role.id);
+                    horizon.membership.update_role_lists($scope.stepSlug, role.id, role_members);
                 } else {
                     member.roles.push(role.id);
+                    var role_members = getRoleMembers($scope.members, role.id);
+                    horizon.membership.update_role_lists($scope.stepSlug, role.id, role_members);
                 }
+            }
+
+            function getRoleMembers(members, role_id) {
+                var role_members = [];
+                angular.forEach(members, function(member) {
+                    if(member.roles.indexOf(role_id) > -1){
+                        role_members.push(member.id);
+                    }
+                });
+                return role_members;
             }
 
             $scope.parseMembers = function(data, members) {
@@ -546,6 +560,9 @@ horizon.membership = {
                 $scope.members.push(member);
                 var index = $scope.available.indexOf(member);
                 $scope.available.splice(index, 1);
+
+                var role_members = getRoleMembers($scope.members, $scope.default_role_id);
+                horizon.membership.update_role_lists($scope.stepSlug, $scope.default_role_id, role_members);
             };
 
             $scope.removeMember = function(member) {
@@ -556,6 +573,8 @@ horizon.membership = {
                 $scope.available.push(member);
                 var index = $scope.members.indexOf(member);
                 $scope.members.splice(index, 1);
+
+                horizon.membership.remove_member_from_role($scope.stepSlug, member.id);
             }
 
         }]);
