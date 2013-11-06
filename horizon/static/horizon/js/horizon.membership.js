@@ -522,10 +522,14 @@ horizon.membership = {
                 var count = 0;
                 angular.forEach($scope.all_roles, function(role) {
                     if(member.roles.indexOf(role.id) >= 0) {
-                        if(count > 0) {
-                            name += ", "
+                        if(count < 2) {
+                            if(count > 0) {
+                                name += ", "
+                            }
+                            name += role.name;
+                        } else if(count === 2) {
+                          name += ", ..."
                         }
-                        name += role.name;
                         count++;
                     }
                 });
