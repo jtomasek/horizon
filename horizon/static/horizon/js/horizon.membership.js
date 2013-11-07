@@ -152,119 +152,6 @@ horizon.membership = {
     horizon.membership.update_role_lists(step_slug, role_id, role_list);
   },
 
-  /*
-   * Triggers on click of link to add/remove membership association.
-   **/
-   update_membership: function(step_slug) {
-     $(".available_" + step_slug + ", ." + step_slug + "_members").on('click', ".btn-group a[href='#add_remove']", function (evt) {
-       evt.preventDefault();
-       var available = $(".available_" + step_slug).has($(this)).length;
-       var data_id = horizon.membership.get_field_id($(this).parent().siblings().attr('data-' + step_slug +  '-id'));
-       var member_el = $(this).parent().parent();
-
-       if (available) {
-         var default_role = horizon.membership.default_role_id[step_slug];
-         $(this).text("-");
-         $("." + step_slug + "_members").append(member_el);
-         horizon.membership.add_member_to_role(step_slug, data_id, default_role);
-
-         if (horizon.membership.has_roles[step_slug]) {
-           $(this).parent().siblings(".role_options").show();
-           horizon.membership.update_member_role_dropdown(step_slug, data_id, [default_role], member_el);
-         }
-       }
-       else {
-         $(this).text("+");
-         $(this).parent().siblings(".role_options").hide();
-         $(".available_" + step_slug).append(member_el);
-         horizon.membership.remove_member_from_role(step_slug, data_id);
-       }
-
-       // update lists
-       horizon.membership.list_filtering(step_slug);
-       horizon.membership.detect_no_results(step_slug);
-
-       // remove input filters
-       $("input." + step_slug + "_filter").val("");
-     });
-   },
-
-  /*
-   * Detects whether each list has members and if it does not
-   * displays a message to the user.
-   **/
-  detect_no_results: function (step_slug) {
-    $('.' + step_slug +  '_filterable').each( function () {
-      var css_class = $(this).find('ul').attr('class');
-      // Example value: members step_slug_members
-      // Pick the class name that contains the step_slug
-      var filter = _.find(css_class.split(' '), function(val){ return val.indexOf(step_slug) != -1; });
-
-      if (!$('.' + filter).children('ul').length) {
-        $('#no_' + filter).show();
-        $("input[id='" + filter + "']").attr('disabled', 'disabled');
-      }
-      else {
-        $('#no_' + filter).hide();
-        $("input[id='" + filter + "']").removeAttr('disabled');
-      }
-    });
-  },
-
-  /*
-   * Triggers on selection of new role for a member.
-   **/
-  select_member_role: function(step_slug) {
-    $(".available_" + step_slug + ", ." + step_slug + "_members").on('click', '.role_dropdown li', function (evt) {
-      evt.preventDefault();
-      evt.stopPropagation();
-
-      // get the newly selected role and the member's name
-      var new_role_id = $(this).attr("data-role-id");
-      var id_str = $(this).parent().parent().siblings(".member").attr("data-" + step_slug + "-id");
-      var data_id = horizon.membership.get_field_id(id_str);
-      // update role lists
-      if ($(this).hasClass('selected')) {
-        $(this).removeClass('selected');
-        horizon.membership.remove_member_from_role(step_slug, data_id, new_role_id);
-      } else {
-        $(this).addClass('selected');
-        horizon.membership.add_member_to_role(step_slug, data_id, new_role_id);
-      }
-      horizon.membership.update_member_role_dropdown(step_slug, data_id);
-    });
-  },
-
-  /*
-   * Triggers on the addition of a new member via the inline object creation field.
-   **/
-  add_new_member: function(step_slug) {
-    $("select[id='id_new_" + step_slug + "']").on('change', function (evt) {
-      // add the member to the visible list
-      var display_name = $(this).find("option").text();
-      var data_id = $(this).find("option").attr("value");
-      var default_role_id = horizon.membership.default_role_id[step_slug];
-      $("." + step_slug + "_members").append(horizon.membership.generate_member_element(step_slug, display_name, data_id, [default_role_id], "-"));
-
-      // add the member to the hidden role lists and the data list
-      horizon.membership.data[step_slug][data_id] = display_name;
-      $("select[multiple='multiple']").append("<option value='" + data_id + "'>" + horizon.membership.data[step_slug][data_id] + "</option>");
-      horizon.membership.add_member_to_role(step_slug, data_id, default_role_id);
-
-      // remove option from hidden select
-      $(this).text("");
-
-      // reset lists and input filters
-      horizon.membership.list_filtering(step_slug);
-      horizon.membership.detect_no_results(step_slug);
-      $("input.filter").val("");
-
-      // fix styling
-      $("." +  step_slug + "_members .btn-group").removeClass('last_stripe');
-      $("." +  step_slug + "_members .btn-group:last").addClass('last_stripe');
-    });
-  },
-
   init_angular: function (horizon) {
     var horizonApp = angular.module('horizonApp', [])
         .config(function($interpolateProvider) {
@@ -397,6 +284,7 @@ horizon.membership = {
                   }
             };
 
+            // extract to factory
             $scope.roleShow = function(member) {
                 var name = "";
                 var count = 0;
