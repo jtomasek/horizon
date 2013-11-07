@@ -50,7 +50,6 @@ horizon.membership = {
   init_data_list: function(step_slug) {
     horizon.membership.data[step_slug] = [];
     _.each($(this.get_role_element(step_slug, "")).find("option"), function (option) {
-      console.log('Found ourselves an option:' + option.text);
       horizon.membership.data[step_slug][option.value] = option.text;
     });
   },
@@ -263,39 +262,6 @@ horizon.membership = {
       // fix styling
       $("." +  step_slug + "_members .btn-group").removeClass('last_stripe');
       $("." +  step_slug + "_members .btn-group:last").addClass('last_stripe');
-    });
-  },
-
-  /*
-   * Style the inline object creation button, hide the associated field.
-   **/
-  add_new_member_styling: function(step_slug) {
-    var add_member_el = $("label[for='id_new_" + step_slug + "']").parent();
-    $(add_member_el).find("select").hide();
-    $("#add_" + step_slug).append($(add_member_el));
-    $(add_member_el).addClass("add_" + step_slug);
-    $(add_member_el).find("label, .input").addClass("add_" + step_slug + "_btn");
-  },
-
-  /*
-  * Fixes the striping of the fake table upon modification of the lists.
-  **/
-  fix_stripes: function(step_slug) {
-    $('.fake_' + step_slug + '_table').each( function () {
-      var filter = "." + $(this).attr('id');
-      var visible = " .btn-group:visible";
-      var even = " .btn-group:visible:even";
-      var last = " .btn-group:visible:last";
-
-      // fix striping of rows
-      $(filter + visible).removeClass('dark_stripe');
-      $(filter + visible).addClass('light_stripe');
-      $(filter + even).removeClass('light_stripe');
-      $(filter + even).addClass('dark_stripe');
-
-      // fix bottom border of new last element
-      $(filter + visible).removeClass('last_stripe');
-      $(filter + last).addClass('last_stripe');
     });
   },
 
@@ -536,12 +502,8 @@ horizon.membership = {
 
     horizon.membership.init_angular(horizon);
 
-    function hasClass(element, cls) {
-        return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
-    }
-
     modal = $('#modal_wrapper .workflow');
-    if(!(hasClass(modal, "ng-scope"))) {
+    if(!modal.hasClass("ng-scope")) {
         angular.bootstrap(modal, ['horizonApp']);
     }
   }
