@@ -129,7 +129,6 @@ TEMPLATE_DIRS = (
 
 STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
-    'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder'
 )
 
@@ -160,8 +159,7 @@ INSTALLED_APPS = (
     'openstack_dashboard.dashboards.admin',
     'openstack_dashboard.dashboards.settings',
     'openstack_auth',
-    'openstack_dashboard.dashboards.router',
-    'djangular'
+    'openstack_dashboard.dashboards.router'
 )
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
