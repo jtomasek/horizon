@@ -1,157 +1,6 @@
 /* Namespace for core functionality related to Membership Workflow Step. */
 horizon.membership = {
 
-  current_membership: [],
-  data: [],
-  roles: [],
-  has_roles: [],
-  default_role_id: [],
-
-  /* Parses the form field selector's ID to get either the
-   * role or user id (i.e. returns "id12345" when
-   * passed the selector with id: "id_group_id12345").
-   **/
-  get_field_id: function(id_string) {
-    return id_string.slice(id_string.lastIndexOf("_") + 1);
-  },
-
-  /*
-   * Gets the html select element associated with a given
-   * role id.
-   **/
-  get_role_element: function(step_slug, role_id) {
-      return $('select[id^="id_' + step_slug + '_role_' + role_id + '"]');
-  },
-
-  /*
-   * Gets the html ul element associated with a given
-   * data id. I.e., the member's row.
-   **/
-  get_member_element: function(step_slug, data_id) {
-      return $('li[data-' + step_slug + '-id$=' + data_id + ']').parent();
-  },
-
-  /*
-   * Initializes all of the horizon.membership lists with
-   * data parsed from the hidden form fields, as well as the
-   * default role id.
-   **/
-  init_properties: function(step_slug) {
-    horizon.membership.has_roles[step_slug] = $("." + step_slug + "_membership").data('show-roles') !== "False";
-    horizon.membership.default_role_id[step_slug] = $('#id_default_' + step_slug + '_role').attr('value');
-    horizon.membership.init_data_list(step_slug);
-    horizon.membership.init_role_list(step_slug);
-    horizon.membership.init_current_membership(step_slug);
-  },
-
-  /*
-   * Initializes an associative array mapping data ids to display names.
-   **/
-  init_data_list: function(step_slug) {
-    horizon.membership.data[step_slug] = {};
-    _.each($(this.get_role_element(step_slug, "")).find("option"), function (option) {
-      horizon.membership.data[step_slug][option.value] = option.text;
-    });
-  },
-
-  /*
-   * Initializes an associative array mapping role ids to role names.
-   **/
-  init_role_list: function(step_slug) {
-    horizon.membership.roles[step_slug] = {};
-    _.each($('label[for^="id_' + step_slug + '_role_"]'), function(role) {
-      var id = horizon.membership.get_field_id($(role).attr('for'));
-      horizon.membership.roles[step_slug][id] = $(role).text();
-    });
-  },
-
-  /*
-   * Initializes an associative array of lists of the current
-   * members for each available role.
-   **/
-  init_current_membership: function(step_slug) {
-    horizon.membership.current_membership[step_slug] = {};
-    var members_list = [];
-    var role_name, role_id, selected_members;
-    _.each(this.get_role_element(step_slug, ''), function(value, key) {
-      role_id = horizon.membership.get_field_id($(value).attr('id'));
-      role_name = $('label[for="id_' + step_slug + '_role_' + role_id + '"]').text();
-
-      // get the array of members who are selected in this list
-      selected_members = $(value).find("option:selected");
-      // extract the member names and add them to the dictionary of lists
-      members_list = [];
-      if (selected_members) {
-        _.each(selected_members, function(member) {
-          members_list.push(member.value);
-        });
-      }
-      horizon.membership.current_membership[step_slug][role_id] = members_list;
-    });
-  },
-
-  /*
-   * Returns the ids of roles the data is member of.
-   **/
-  get_member_roles: function(step_slug, data_id) {
-    var roles = [];
-    for (var role in horizon.membership.current_membership[step_slug]) {
-      if ($.inArray(data_id, horizon.membership.current_membership[step_slug][role]) >= 0) {
-        roles.push(role);
-      }
-    }
-    return roles;
-  },
-
-  /*
-   * Updates the selected values on the role_list's form field, as
-   * well as the current_membership dictionary's list.
-   **/
-  update_role_lists: function(step_slug, role_id, new_list) {
-    this.get_role_element(step_slug, role_id).val(new_list);
-    horizon.membership.current_membership[step_slug][role_id] = new_list;
-  },
-
-  /*
-   * Helper function for remove_member_from_role.
-   **/
-  remove_member: function(step_slug, data_id, role_id, role_list) {
-    var index = role_list.indexOf(data_id);
-    if (index >= 0) {
-      // remove member from list
-      role_list.splice(index, 1);
-      horizon.membership.update_role_lists(step_slug, role_id, role_list);
-    }
-  },
-
-  /*
-   * Searches through the role lists and removes a given member
-   * from the lists.
-   **/
-  remove_member_from_role: function(step_slug, data_id, role_id) {
-    var role_list;
-    if (role_id) {
-      role_list = horizon.membership.current_membership[step_slug][role_id];
-      horizon.membership.remove_member(step_slug, data_id, role_id, role_list);
-    }
-    else {
-      // search for membership in role lists
-      for (var role in horizon.membership.current_membership[step_slug]) {
-        role_list = horizon.membership.current_membership[step_slug][role];
-        horizon.membership.remove_member(step_slug, data_id, role, role_list);
-      }
-    }
-  },
-
-  /*
-   * Adds a member to a given role list.
-   **/
-  add_member_to_role: function(step_slug, data_id, role_id) {
-    var role_list = horizon.membership.current_membership[step_slug][role_id];
-    role_list.push(data_id);
-    horizon.membership.update_role_lists(step_slug, role_id, role_list);
-  },
-
   compile_modal_template: function() {
     var modal = $('#modal_wrapper .modal-body');
     var html = modal.html();
@@ -177,46 +26,13 @@ horizon.membership = {
            return; // continue
         }
 
-        // call the initalization functions
-        horizon.membership.init_properties(step_slug);
-        horizon.membership.generate_html(step_slug);
-        horizon.membership.update_membership(step_slug);
-        horizon.membership.select_member_role(step_slug);
-        horizon.membership.add_new_member(step_slug);
-
-        // initially hide role dropdowns for available member list
-        $form.find(".available_" +  step_slug + " .role_options").hide();
-
-        // hide the dropdown for members too if we don't need to show it
-        if (!horizon.membership.has_roles[step_slug]) {
-            $form.find("." + step_slug + "_members .role_options").hide();
-        }
-
-        // unfocus filter fields
-        if (step_id.indexOf('update') === 0) {
-            $form.find("#" + step_id + " input").blur();
-        }
-
         // prevent filter inputs from submitting form on 'enter'
         $form.find('.' + step_slug + '_membership').keydown(function(event){
             if(event.keyCode == 13) {
               event.preventDefault();
               return false;
             }
-          });
-
-        // add filtering + styling to the inline obj creation btn
-        horizon.membership.add_new_member_styling(step_slug);
-        horizon.membership.list_filtering(step_slug);
-        horizon.membership.detect_no_results(step_slug);
-
-        // fix initial striping of rows
-        $form.find('.fake_' + step_slug + '_table').each( function () {
-          var filter = "." + $(this).attr('id');
-          $(filter + ' .btn-group:even').addClass('dark_stripe');
-          $(filter + ' .btn-group:last').addClass('last_stripe');
         });
-
 
     });
 

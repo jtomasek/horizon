@@ -132,6 +132,7 @@ class UpdateDomainGroupsAction(workflows.MembershipAction):
 
 class UpdateDomainGroups(workflows.UpdateMembersStep):
     action_class = UpdateDomainGroupsAction
+    depends_on = ("json_data_url",)
     available_list_title = _("All Groups")
     members_list_title = _("Domain Groups")
     no_available_text = _("No groups found.")

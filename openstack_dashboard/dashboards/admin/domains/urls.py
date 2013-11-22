@@ -24,5 +24,6 @@ urlpatterns = patterns('',
     url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^create$', views.CreateDomainView.as_view(), name='create'),
     url(r'^(?P<domain_id>[^/]+)/update/$',
-        views.UpdateDomainView.as_view(), name='update')
+        views.UpdateDomainView.as_view(), name='update'),
+    url(r'^(?P<domain_id>[^/]+)/update.json/$', views.UpdateDomainJSONDataView.as_view(), {'action': 'get_data'}, name='update_json'),
 )

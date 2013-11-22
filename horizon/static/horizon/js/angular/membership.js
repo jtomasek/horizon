@@ -10,135 +10,93 @@ angular.module('horizonApp').directive('hrMembership',
                      stepAvailableListTitle: '=',
                      stepMembersListTitle: '=',
                      stepNoAvailableText: '=',
-                     stepNoMembersText: '=' },
+                     stepNoMembersText: '=',
+                     jsonDataUrl: '=' },
             templateUrl: 'membership_workflow.html',
             controller: 'MembershipController',
-            link: function(scope, element, attrs) {
-                scope.loadDataFromDOM(scope.stepSlug);
-            }
-
+            link: function(scope, element, attrs) {}
         };
     })
-.factory('MembershipFactory', function() {
+.factory('MembershipFactory', ['$http', function($http) {
     return {
-        inGroup: function(group, membership) {
-            var matched = false;
-            angular.forEach(membership, function(m, roleId) {
-                angular.forEach(m, function(groupId) {
-                    if(groupId === group.id) {
-                        matched = true;
-                        group.roles.push(roleId);
-                    }
+        getData: function(url, success_callback) {
+            $http.get(url)
+                .success(success_callback)
+                .error(function(data, status) {
+                    console.log(status);
+                    console.log(data);
+                }
+            );
+        }
+    };
+}])
+.controller('MembershipController',
+    ['$scope', '$filter', '$http', 'horizon', 'MembershipFactory',
+    function($scope, $filter, $http, horizon, MembershipFactory) {
+        MembershipFactory.getData($scope.jsonDataUrl, function(data, status) {
+           $scope.role_structure = data;
+        });
+
+        // Watch the roles model for changes and regenerate members
+        $scope.$watchCollection('role_structure.roles', function(updatedRoles) {
+            if( ! updatedRoles ) { return; }
+            angular.forEach(updatedRoles, function(role, index) {
+                $scope.$watchCollection('role_structure.roles['+index+'].selected_groups', function(updatedSelectedGroups, oldSelectedGroups) {
+                    if( ! updatedSelectedGroups ) { return; }
+                    $scope.regenerateMembers();
                 });
             });
-            return matched;
-        },
+        });
 
-        convertRoles: function(membership_roles) {
-            var roles = [];
-            angular.forEach(membership_roles, function(role, roleId) {
-                roles.push({ id: roleId, name: role });
+        $scope.regenerateMembers = function() {
+            $scope.available = [];
+            $scope.members = [];
+            angular.forEach($scope.role_structure.groups, function(group) {
+                if($scope.rolesForGroup(group).length > 0) {
+                    $scope.members.push(group);
+                } else {
+                    $scope.available.push(group);
+                }
             });
-            return roles;
-        },
-
-        getRoleMembers: function(members, role_id) {
-            var role_members = [];
-            angular.forEach(members, function(member) {
-                if(this.hasRole(member, role_id)) {
-                    role_members.push(member.id);
-                }
-            }, this);
-            return role_members;
-        },
-
-        printLongList: function(member, roles) {
-            var name = [];
-            angular.forEach(roles, function(role) {
-                if(this.hasRole(member, role.id)) {
-                    if (name.length === 2){
-                        name.push('...');
-                        return
-                    } else {
-                        name.push(role.name);
-                    }
-                }
-            },this);
-            return name.join(',');
-        },
-
-        hasRole: function(member, roleId) {
-            return (member.roles.indexOf(roleId) >= 0);
-        }
-    }
-})
-.controller('MembershipController',
-    ['$scope', 'horizon', 'MembershipFactory',
-    function($scope, horizon, MembershipFactory) {
-
-        $scope.available = [];
-        $scope.members = [];
-
-        $scope.loadDataFromDOM = function(stepSlug) {
-            horizon.membership.init_properties(stepSlug);
-            $scope.has_roles = horizon.membership.has_roles[stepSlug];
-            $scope.default_role_id = horizon.membership.default_role_id[stepSlug];
-            $scope.data_list = horizon.membership.data[stepSlug];
-            $scope.all_roles = MembershipFactory.convertRoles(horizon.membership.roles[stepSlug]);
-            $scope.current_membership = horizon.membership.current_membership[stepSlug];
-
-            $scope.parseMembers($scope.data_list, $scope.current_membership);
         };
 
-        $scope.hasRole = function(member, roleId) {
-            return MembershipFactory.hasRole(member, roleId);
+        $scope.rolesForGroup = function(group) {
+            return $filter('filter')($scope.role_structure.roles, function(role) {
+                return role.selected_groups.indexOf(group.id) > -1;
+            });
         };
 
-        $scope.makeGroup = function(id, name) {
-            return { id: id, name: name, roles: [] }
+        $scope.hasRole = function(group, role) {
+            return $scope.rolesForGroup(group).indexOf(role) > -1;
         };
 
-        $scope.toggleRole = function(member, role_id) {
-            var role_members;
-            if(MembershipFactory.hasRole(member, role_id)) {
-                member.roles.splice(member.roles.indexOf(role_id), 1);
+        $scope.rolesText = function(group) {
+            var names = [];
+            angular.forEach($scope.rolesForGroup(group), function(role) {
+                names.push(role.name);
+            });
+            return names.slice(0,2).join(', ') + (names.length > 2 ? ",..." : "");
+        };
+
+        $scope.toggleRole = function(group_id, role) {
+            if(role.selected_groups.indexOf(group_id) > -1) {
+                var index = role.selected_groups.indexOf(group_id);
+                role.selected_groups.splice(index, 1);
             } else {
-                member.roles.push(role_id);
+                role.selected_groups.push(group_id);
             }
-            role_members = MembershipFactory.getRoleMembers($scope.members, role_id);
-            horizon.membership.update_role_lists($scope.stepSlug, role_id, role_members);
         };
 
-        $scope.parseMembers = function(data, members) {
-            angular.forEach(data, function(group_data, group) {
-                var g = $scope.makeGroup(group, group_data);
-                MembershipFactory.inGroup(g, members)? $scope.members.push(g): $scope.available.push(g);
+        $scope.addMember = function(group){
+            var default_role = $filter('filter')($scope.role_structure.roles, { id: $scope.role_structure.default_role_id })[0];
+            default_role.selected_groups.push(group.id);
+        };
+
+        $scope.removeMember = function(group) {
+            angular.forEach($scope.rolesForGroup(group), function(role) {
+                var index = role.selected_groups.indexOf(group.id);
+                role.selected_groups.splice(index, 1);
             });
         };
-
-        $scope.roleShow = function(member) {
-            return MembershipFactory.printLongList(member, $scope.all_roles);
-        }
-
-        $scope.addMember = function(member, default_role_id) {
-            var index, role_members;
-            member.roles.push(default_role_id);
-            $scope.members.push(member);
-            index = $scope.available.indexOf(member);
-            $scope.available.splice(index, 1);
-
-            role_members = MembershipFactory.getRoleMembers($scope.members, default_role_id);
-            horizon.membership.update_role_lists($scope.stepSlug, default_role_id, role_members);
-        };
-
-        $scope.removeMember = function(member) {
-            var index;
-            member.roles = [];
-            $scope.available.push(member);
-            index = $scope.members.indexOf(member);
-            $scope.members.splice(index, 1);
-
-            horizon.membership.remove_member_from_role($scope.stepSlug, member.id);
-        }
 
     }]);
