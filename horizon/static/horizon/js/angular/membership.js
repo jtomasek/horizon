@@ -66,8 +66,12 @@ angular.module('horizonApp').directive('hrMembership',
             });
         };
 
-        $scope.hasRole = function(group, role) {
+        $scope.groupHasRole = function(group, role) {
             return $scope.rolesForGroup(group).indexOf(role) > -1;
+        };
+
+        $scope.roleHasGroupSelected = function(role, group_id) {
+            return role.selected_groups.indexOf(group_id) > -1;
         };
 
         $scope.rolesText = function(group) {

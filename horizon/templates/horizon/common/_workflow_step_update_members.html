@@ -67,7 +67,7 @@
                           <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu role_dropdown clearfix">
-                          <li ng-class="{true: 'selected', false: '' }[hasRole(member, role)]"
+                          <li ng-class="{true: 'selected', false: '' }[groupHasRole(member, role)]"
                               ng-repeat='role in role_structure.roles' ng-click='toggleRole(member.id, role)'>
                             <i class="icon-ok"></i>
                             {$ role.name $}
@@ -82,7 +82,7 @@
                 </div>
               </div>
             </div>
-            <div class="">
+            <div class="hide">
               <label for="id_default_{$ stepSlug $}_role">Default role</label>
               <input id="id_default_{$ stepSlug $}_role" name="default_{$ stepSlug $}_role" type="text"
                      ng-model="role_structure.default_role_id">
@@ -93,8 +93,9 @@
                       multiple="multiple"
                       id="id_{$ stepSlug $}_role_{$ role.id $}"
                       name="{$ stepSlug $}_role_{$ role.id $}"
-                      ng-model="role.selected_groups"
-                      ng-options="group.id as group.name for group in role_structure.groups">
+                      ng-model="role.selected_groups">
+                <option ng-repeat="group in role_structure.groups" value="{$ group.id $}" ng-bind="group.name"
+                        ng-selected="{true: 'selected', false: '' }[roleHasGroupSelected(role, group.id)]">
               </select>
             </div>
         </div>
