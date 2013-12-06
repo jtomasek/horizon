@@ -61,69 +61,6 @@ class UpdateDomainGroupsAction(workflows.MembershipAction):
         super(UpdateDomainGroupsAction, self).__init__(request,
                                                        *args,
                                                        **kwargs)
-        err_msg = _('Unable to retrieve group list. Please try again later.')
-        domain_id = ''
-        if 'domain_id' in args[0]:
-            domain_id = args[0]['domain_id']
-
-        # Get the default role
-        try:
-            default_role = api.keystone.get_default_role(self.request)
-            # Default role is necessary to add members to a domain
-            if default_role is None:
-                default = getattr(settings,
-                                  "OPENSTACK_KEYSTONE_DEFAULT_ROLE", None)
-                msg = _('Could not find default role "%s" in Keystone') % \
-                        default
-                raise exceptions.NotFound(msg)
-        except Exception:
-            exceptions.handle(self.request,
-                              err_msg,
-                              redirect=reverse(constants.DOMAINS_INDEX_URL))
-        default_role_name = self.get_default_role_field_name()
-        self.fields[default_role_name] = forms.CharField(required=False)
-        self.fields[default_role_name].initial = default_role.id
-
-        # Get list of available groups
-        all_groups = []
-        try:
-            all_groups = api.keystone.group_list(request,
-                                                 domain=domain_id)
-        except Exception:
-            exceptions.handle(request, err_msg)
-        groups_list = [(group.id, group.name) for group in all_groups]
-
-        # Get list of roles
-        role_list = []
-        try:
-            role_list = api.keystone.role_list(request)
-        except Exception:
-            exceptions.handle(request,
-                              err_msg,
-                              redirect=reverse(constants.DOMAINS_INDEX_URL))
-        for role in role_list:
-            field_name = self.get_member_field_name(role.id)
-            label = role.name
-            self.fields[field_name] = forms.MultipleChoiceField(required=False,
-                                                                label=label)
-            self.fields[field_name].choices = groups_list
-            self.fields[field_name].initial = []
-
-        # Figure out groups & roles
-        if domain_id:
-            for group in all_groups:
-                try:
-                    roles = api.keystone.roles_for_group(self.request,
-                                                         group=group.id,
-                                                         domain=domain_id)
-                except Exception:
-                    exceptions.handle(request,
-                                      err_msg,
-                                      redirect=reverse(
-                                          constants.DOMAINS_INDEX_URL))
-                for role in roles:
-                    field_name = self.get_member_field_name(role.id)
-                    self.fields[field_name].initial.append(group.id)
 
     class Meta:
         name = _("Domain Groups")
@@ -139,17 +76,17 @@ class UpdateDomainGroups(workflows.UpdateMembersStep):
     no_members_text = _("No groups.")
 
     def contribute(self, data, context):
-        if data:
-            try:
-                roles = api.keystone.role_list(self.workflow.request)
-            except Exception:
-                exceptions.handle(self.workflow.request,
-                                  _('Unable to retrieve role list.'))
+        try:
+            roles = api.keystone.role_list(self.workflow.request)
+        except Exception:
+            exceptions.handle(self.workflow.request,
+                              _('Unable to retrieve role list.'))
 
-            post = self.workflow.request.POST
-            for role in roles:
-                field = self.get_member_field_name(role.id)
-                context[field] = post.getlist(field)
+        post = self.workflow.request.POST
+        for role in roles:
+            field = self.get_member_field_name(role.id)
+            context[field] = post.getlist(field)
+
         return context
 
 

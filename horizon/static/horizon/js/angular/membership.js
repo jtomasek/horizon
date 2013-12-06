@@ -34,14 +34,14 @@ angular.module('horizonApp').directive('hrMembership',
     ['$scope', '$filter', '$http', 'horizon', 'MembershipFactory',
     function($scope, $filter, $http, horizon, MembershipFactory) {
         MembershipFactory.getData($scope.jsonDataUrl, function(data, status) {
-           $scope.role_structure = data;
+           $scope.roles_data = data;
         });
 
         // Watch the roles model for changes and regenerate members
-        $scope.$watchCollection('role_structure.roles', function(updatedRoles) {
+        $scope.$watchCollection('roles_data.roles', function(updatedRoles) {
             if( ! updatedRoles ) { return; }
             angular.forEach(updatedRoles, function(role, index) {
-                $scope.$watchCollection('role_structure.roles['+index+'].selected_groups', function(updatedSelectedGroups, oldSelectedGroups) {
+                $scope.$watchCollection('roles_data.roles['+index+'].selected_groups', function(updatedSelectedGroups) {
                     if( ! updatedSelectedGroups ) { return; }
                     $scope.regenerateMembers();
                 });
@@ -51,7 +51,7 @@ angular.module('horizonApp').directive('hrMembership',
         $scope.regenerateMembers = function() {
             $scope.available = [];
             $scope.members = [];
-            angular.forEach($scope.role_structure.groups, function(group) {
+            angular.forEach($scope.roles_data.groups, function(group) {
                 if($scope.rolesForGroup(group).length > 0) {
                     $scope.members.push(group);
                 } else {
@@ -61,7 +61,7 @@ angular.module('horizonApp').directive('hrMembership',
         };
 
         $scope.rolesForGroup = function(group) {
-            return $filter('filter')($scope.role_structure.roles, function(role) {
+            return $filter('filter')($scope.roles_data.roles, function(role) {
                 return role.selected_groups.indexOf(group.id) > -1;
             });
         };
@@ -92,7 +92,7 @@ angular.module('horizonApp').directive('hrMembership',
         };
 
         $scope.addMember = function(group){
-            var default_role = $filter('filter')($scope.role_structure.roles, { id: $scope.role_structure.default_role_id })[0];
+            var default_role = $filter('filter')($scope.roles_data.roles, { id: $scope.roles_data.default_role_id })[0];
             default_role.selected_groups.push(group.id);
         };
 
