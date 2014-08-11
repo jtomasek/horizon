@@ -9,14 +9,16 @@
 {% block modal-header %}{% trans "Edit Host Aggregate" %}{% endblock %}
 
 {% block modal-body %}
-<div class="left">
-  <fieldset>
-  {% include "horizon/common/_form_fields.html" %}
-  </fieldset>
-</div>
-<div class="right">
-  <h3>{% trans "Description" %}:</h3>
-  <p>{% trans "Host aggregates divide an availability zone into logical units by grouping together hosts. Edit the aggregate host to select hosts contained in it." %}</p>
+<div class="row">
+  <div class="col-sm-6">
+    <fieldset>
+    {% include "horizon/common/_form_fields.html" %}
+    </fieldset>
+  </div>
+  <div class="col-sm-6">
+    <h3>{% trans "Description" %}:</h3>
+    <p>{% trans "Host aggregates divide an availability zone into logical units by grouping together hosts. Edit the aggregate host to select hosts contained in it." %}</p>
+  </div>
 </div>
 {% endblock %}
 

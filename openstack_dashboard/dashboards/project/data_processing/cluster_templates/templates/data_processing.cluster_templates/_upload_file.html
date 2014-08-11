@@ -11,11 +11,15 @@
 {% block modal-header %}{% trans "Upload Template" %}{% endblock %}
 
 {% block modal-body %}
-    <div class="left">
-        <fieldset>
-            {% include "horizon/common/_form_fields.html" %}
-        </fieldset>
-    </div>
+<div class="row">
+  <div class="col-sm-6">
+    <fieldset>
+      {% include "horizon/common/_form_fields.html" %}
+    </fieldset>
+  </div>
+  <div class="col-sm-6">
+  </div>
+</div>
 {% endblock %}
 
 {% block modal-footer %}

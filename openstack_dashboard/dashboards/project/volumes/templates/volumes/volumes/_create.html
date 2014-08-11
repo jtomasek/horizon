@@ -9,15 +9,17 @@
 {% block modal-header %}{% trans "Create Volume" %}{% endblock %}
 
 {% block modal-body %}
-  <div class="left">
+<div class="row">
+  <div class="col-sm-6">
     <fieldset>
       {% include "horizon/common/_form_fields.html" %}
     </fieldset>
   </div>
 
-  <div class="right quota-dynamic">
+  <div class="col-sm-6 quota-dynamic">
     {% include "project/volumes/volumes/_limits.html" with usages=usages %}
   </div>
+</div>
 {% endblock %}
 
 {% block modal-footer %}

@@ -3,7 +3,7 @@
     <div class="{% if hide %}modal-content{% endif %}">
       <div class="modal-header">
         {% if hide %}<a href="#" class="close" data-dismiss="modal">&times;</a>{% endif %}
-        <h3>{% block modal-header %}{% endblock %}</h3>
+        <h3 class="modal-title">{% block modal-header %}{% endblock %}</h3>
       </div>
       <div class="modal-body clearfix">
         {% block modal-body %}{% endblock %}

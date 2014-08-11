@@ -106,3 +106,21 @@ class TemplateTagTests(test.TestCase):
                                             template_text=text,
                                             context={'test': ctx_string})
         self.assertEqual(expected, rendered_str)
+
+    def test_horizon_main_nav(self):
+        text = "{% horizon_main_nav %}"
+        expected = """
+                <div class='clearfix'>
+                    <ul class=\"nav nav-tabs\" role=\"tablist\">
+                        <li>
+                            <a href=\"/cats/\" tabindex='1'>Cats</a>
+                        </li>
+                        <li>
+                            <a href=\"/dogs/\" tabindex='1'>Dogs</a>
+                        </li>
+                    </ul></div>"""
+
+        rendered_str = self.render_template(tag_require='horizon',
+                                            template_text=text,
+                                            context={'request': self.request})
+        self.assertEqual(single_line(rendered_str), single_line(expected))
