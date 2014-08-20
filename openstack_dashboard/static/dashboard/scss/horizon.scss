@@ -2297,4 +2297,12 @@ span.password-reveal-button {
     // https://github.com/twbs/bootstrap-sass/issues/105
     // TODO(rdopieralski) Remove when fixed.
     background-image: url(../../bootstrap/img/glyphicons-halflings.png);
+
+/**** Details Override ****/
+.detail ul {
+  padding-left: 0;
+}
+
+.detail dt {
+  text-align: left;
 }
