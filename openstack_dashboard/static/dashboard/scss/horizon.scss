@@ -2339,3 +2339,12 @@ label.log-length {
 a.link-popover { cursor: default; }
 
 a:hover.link-popover { text-decoration: none; }
+
+/**** Details Override ****/
+.detail ul {
+  padding-left: 0;
+}
+
+.detail dt {
+  text-align: left;
+}

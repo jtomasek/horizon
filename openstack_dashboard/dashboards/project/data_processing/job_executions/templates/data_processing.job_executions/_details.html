@@ -2,7 +2,8 @@
 {% load url from future %}
 <h3>{% trans "Job Execution Overview" %}</h3>
 <div class="status row detail">
-    <dl>
+  <div class="col-sm-12">
+    <dl class="dl-horizontal">
         <dt>{% trans "Status" %}</dt>
         <dd>{{ job_execution.info.status }}</dd>
         <dt>{% trans "ID" %}</dt>
@@ -39,4 +40,5 @@
             {% endfor %}
         </dd>
     </dl>
+  </div>
 </div>
